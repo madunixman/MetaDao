@@ -1,6 +1,6 @@
-<project name="ETLPersistenza" default="dist" basedir=".">
+<project name="MetaDao" default="dist" basedir=".">
     <description>
-        Build file for project ETLPersistenza
+        Build file for project MetaDao
     </description>
   <!-- set global properties for this build -->
   <property name="src" location="src"/>
@@ -31,7 +31,7 @@
     <!-- Create the distribution directory -->
     <mkdir dir="${dist}/lib"/>
 
-    <jar jarfile="${dist}/lib/etl-persistenza.jar" basedir="${build}"/>
+    <jar jarfile="${dist}/lib/metadao.jar" basedir="${build}"/>
   </target>
 
   <target name="clean"

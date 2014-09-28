@@ -34,6 +34,16 @@ public class DbManager extends DbConnectionManager {
 		}
 	}
 	
+	private DbManager(String databaseName){
+		PropertiesManager configManager = PropertiesManager.getInstance();
+		Properties dbProperties = configManager.getProperties();
+		JDBC_URL= (String) dbProperties.get(databaseName+".JDBC_URL");
+		DRIVER_CLASS_NAME= (String) dbProperties.get(databaseName+".DRIVER_CLASS_NAME");
+		DB_USER = (String) dbProperties.get(databaseName+".DB_USER");
+		DB_PASSWORD = (String) dbProperties.get(databaseName+".DB_PASSWORD");
+		init();
+	}
+	
 	private DbManager(){
 		PropertiesManager configManager = PropertiesManager.getInstance();
 		Properties dbProperties = configManager.getProperties();

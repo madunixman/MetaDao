@@ -231,7 +231,7 @@ static Logger log =  Logger.getLogger("MetaDao");
 		Set<String> keys = dto.keySet();
 		Iterator<String> keysIterator_set = keys.iterator();
 		
-		String sql = "DELETE FROM" + TABLE_NAME + " " ;
+		String sql = "DELETE FROM " + TABLE_NAME + " " ;
 		int index = 0;
 		String k;
 		index = 1;

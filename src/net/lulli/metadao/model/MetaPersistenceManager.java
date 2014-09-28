@@ -132,6 +132,24 @@ public abstract class MetaPersistenceManager extends SQLDialect{
 		}
 	}
 	
+	public void delete(MetaDto dto, Hashtable wheres){
+		//DbManager dbManager = DbManager.getInstance();
+		DbConnectionManager dbManager = getDbConnectionManager();
+		Connection conn = null;
+		MetaDao dao;
+		try{
+			 this.tableName = dto.getTableName();
+			 conn = dbManager.getConnection();
+			 dao = new MetaDao();
+			 dao.delete(dto, wheres, conn);
+		}	catch (Exception e) {
+			log.trace(e.getMessage());
+		} finally {
+			dbManager.releaseConnection(conn);
+		}
+	}
+	
+	
 	
 	public String save(MetaDto dto,  Hashtable wheres){
 		//1 Verifica se il docVenditaDettaglio e' presente
