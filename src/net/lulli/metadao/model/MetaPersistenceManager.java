@@ -1,6 +1,7 @@
 package net.lulli.metadao.model;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Hashtable;
@@ -366,5 +367,26 @@ public abstract class MetaPersistenceManager extends SQLDialect{
 			return results;
 		}
 	
-	
+	public int execute(String sqlInputString ){
+        int retvalue = 0;
+        PreparedStatement pstmt = null;
+        Connection conn = null;
+        DbConnectionManager dbManager = getDbConnectionManager();
+        try{
+       	 conn = dbManager.getConnection();
+                //int idx=0;
+                log.debug("sqlInputString = [" + sqlInputString + "]");
+                pstmt = conn.prepareStatement(sqlInputString);
+                retvalue =  pstmt.executeUpdate();
+        } catch (Exception e) {
+                log.error(e.getMessage());
+        }finally{
+                try{
+                        pstmt.close();
+                }catch (Exception e) {
+                        log.error(e.getMessage());
+                }
+        }
+        return retvalue;
+}
 }
