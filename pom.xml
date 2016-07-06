@@ -7,13 +7,6 @@
   <!-- homepage for the project -->
   <url>http://dev.lulli.net/projects/metadao</url>
 
-<parent>
-  <groupId>net.lulli.metadao</groupId>
-  <artifactId>metadao-parent</artifactId>
-  <version>1.0.0</version>
-</parent>
-
-
 <!-- for distribution of artifact into the repo -->
 <!-- ****************************************** -->
 <build>
