@@ -12,9 +12,9 @@ public interface IMetaPersistenceManager extends ISQLDialect{
 	String SQL_DIALECT = SQLDialect.STANDARD;
 	public abstract DbConnectionManager getDbConnectionManager();
 	
-	public List search(MetaDto requestDto, Hashtable wheres);
+	//public List search(MetaDto requestDto, Hashtable wheres);
 	
-	public List search(MetaDto requestDto, Hashtable wheres,  boolean definedAttributes, Integer resultRows);
+	//public List search(MetaDto requestDto, Hashtable wheres,  boolean definedAttributes, Integer resultRows);
 	
 	public  void insert(MetaDto dto);
 	

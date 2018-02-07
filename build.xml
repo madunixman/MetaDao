@@ -8,7 +8,7 @@
   <property name="src" location="src/main/java"/>
   <property name="build" location="build"/>
   <property name="dist"  location="target"/>
-
+  
   <target name="init">
     <!-- Create the time stamp -->
     <tstamp/>
@@ -45,4 +45,3 @@
     <delete dir="${dist}"/>
   </target>
 </project>
-
