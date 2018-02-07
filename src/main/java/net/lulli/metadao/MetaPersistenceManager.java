@@ -1,9 +1,11 @@
-package net.lulli.metadao.model;
+package net.lulli.metadao;
+
+import net.lulli.metadao.api.IMetaPersistenceManager;
+import net.lulli.metadao.api.MetaDto;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
@@ -11,40 +13,17 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 
-import net.lulli.metadao.DbConnectionManager;
-import net.lulli.metadao.MetaDao;
+import net.lulli.metadao.api.ISQLDialect;
+import net.lulli.metadao.model.SQLDialect;
 
 
-public abstract class MetaPersistenceManager extends SQLDialect{
+public abstract class MetaPersistenceManager implements IMetaPersistenceManager{
 	static Logger log =  Logger.getLogger("MetaPersistenceManager");
-	String tableName;
+	private String tableName;
 	
 	String SQL_DIALECT = SQLDialect.STANDARD;
 	public abstract DbConnectionManager getDbConnectionManager();
-	/*
-	public DbConnectionManager getDbConnectionManager(){
-		DbManager dbManager = DbManager.getInstance();
-		return dbManager;
-	}
-	*/
-	
-	/*
-	public List search(MetaDto requestDto, Hashtable wheres,  boolean definedAttributes, Integer resultRows){
-		String sqlDialect = this.getSQLDialect();
-		log.trace("Detected SQLDialect:[" +sqlDialect+"]");
-		List retList = null;
-		if(sqlDialect.equals(STANDARD)){
-			retList = searchMySQL( requestDto,  wheres,   definedAttributes,  resultRows);
-		} else if(sqlDialect.equals(MYSQL)){
-			retList = searchMySQL( requestDto,  wheres,   definedAttributes,  resultRows);
-		} else if(sqlDialect.equals(SYBASE)){
-			retList = searchSybase( requestDto,  wheres,   definedAttributes,  resultRows);
-		}
-			return retList;
-	}
-	*/
-	
-	//Simplified Version
+
 	public List search(MetaDto requestDto, Hashtable wheres){
 		return  search( requestDto,  wheres,   false,  null);
 	}
@@ -62,7 +41,7 @@ public abstract class MetaPersistenceManager extends SQLDialect{
 			log.trace("BEFORE conn");
 			 conn = dbManager.getConnection();
 			 log.trace("AFTER conn");
-			 dao = new MetaDao();
+			 dao = MetaDaoFactory.createMetaDao(SQL_DIALECT);
 			 if (null != sqlDialect){
 				 dao.setSqlDialect(sqlDialect);
 			 }
@@ -75,29 +54,6 @@ public abstract class MetaPersistenceManager extends SQLDialect{
 			return results;
 		}
 	
-	/*
-	private List searchSybase(MetaDto requestDto, Hashtable wheres,  boolean definedAttributes, Integer resultRows){
-		log.trace("BEGIN search");
-		DbConnectionManager dbManager = getDbConnectionManager();
-		Connection conn = null;
-		MetaDao dao;
-		String codeId = null;
-		List results = null;
-		try{
-			log.trace("BEFORE conn");
-			 conn = dbManager.getConnection();
-			 log.trace("AFTER conn");
-			 dao = new MetaDao();
-			 results = dao.search(requestDto, wheres, conn, definedAttributes, resultRows);
-		}	catch (Exception e) {
-			log.trace(e.getMessage());
-		} finally {
-			dbManager.releaseConnection(conn);
-		}
-			return results;
-		}
-	*/
-	
 	public  void insert(MetaDto dto){
 		//DbManager dbManager = DbManager.getInstance();
 		DbConnectionManager dbManager = getDbConnectionManager();
@@ -107,7 +63,7 @@ public abstract class MetaPersistenceManager extends SQLDialect{
 			 this.tableName = dto.getTableName();
 			 conn = dbManager.getConnection();
 			 log.trace("new MetaDao with tableName: [" +tableName +"]");
-			 dao = new MetaDao();
+			 dao = MetaDaoFactory.createMetaDao(SQL_DIALECT);
 			 dao.insert(dto, conn);
 		}	catch (Exception e) {
 			log.trace(e.getMessage());
@@ -124,7 +80,7 @@ public abstract class MetaPersistenceManager extends SQLDialect{
 		try{
 			 this.tableName = dto.getTableName();
 			 conn = dbManager.getConnection();
-			 dao = new MetaDao();
+			 dao = MetaDaoFactory.createMetaDao(SQL_DIALECT);
 			 dao.update(dto, wheres, conn);
 		}	catch (Exception e) {
 			log.trace(e.getMessage());
@@ -141,7 +97,7 @@ public abstract class MetaPersistenceManager extends SQLDialect{
 		try{
 			 this.tableName = dto.getTableName();
 			 conn = dbManager.getConnection();
-			 dao = new MetaDao();
+			 dao = MetaDaoFactory.createMetaDao(SQL_DIALECT);
 			 dao.delete(dto, wheres, conn);
 		}	catch (Exception e) {
 			log.trace(e.getMessage());
@@ -164,7 +120,7 @@ public abstract class MetaPersistenceManager extends SQLDialect{
 			DbConnectionManager dbManager = getDbConnectionManager();
 			MetaDao dao = null;
 			try{
-			dao = new MetaDao();
+				dao = MetaDaoFactory.createMetaDao(SQL_DIALECT);
 			conn = dbManager.getConnection();
 			String presenti = dao.selectCount(dto, wheres, conn, false);
 			log.trace("TABLE:" +dto.getTableName());
@@ -210,7 +166,7 @@ public abstract class MetaPersistenceManager extends SQLDialect{
 		Integer count = 0;
 		try{
 			conn = dbManager.getConnection();
-			dao = new MetaDao();
+			dao = MetaDaoFactory.createMetaDao(SQL_DIALECT);
 			count = Integer.valueOf(dao.selectCount(requestDto, wheres, conn, definedAttributes));
 		}catch (Exception e) {
 			log.error(""+e);
@@ -294,7 +250,7 @@ public abstract class MetaPersistenceManager extends SQLDialect{
 			log.trace("BEFORE conn");
 			 conn = dbManager.getConnection();
 			 log.trace("AFTER conn");
-			 dao = new MetaDao();
+			 dao = MetaDaoFactory.createMetaDao(SQL_DIALECT);
 			 results = dao.searchSybaseTop1(requestDto, wheres, conn, definedAttributes, resultRows);
 		}	catch (Exception e) {
 			log.trace(e.getMessage());
@@ -312,7 +268,7 @@ public abstract class MetaPersistenceManager extends SQLDialect{
 		try{
 			dbManager = getDbConnectionManager();
 			conn = dbManager.getConnection();
-			dao = new MetaDao();
+			dao = MetaDaoFactory.createMetaDao(SQL_DIALECT);
 			created = dao.createTable(tableName, fields, conn);
 		}catch (Exception e) {
 			log.error(""+e);
@@ -328,7 +284,7 @@ public abstract class MetaPersistenceManager extends SQLDialect{
 		try{
 			dbManager = getDbConnectionManager();
 			conn = dbManager.getConnection();
-			dao = new MetaDao();
+			dao = MetaDaoFactory.createMetaDao(SQL_DIALECT);
 			dropped = dao.dropTable(tableName, conn);
 		}catch (Exception e) {
 			log.error(""+e);
@@ -354,7 +310,7 @@ public abstract class MetaPersistenceManager extends SQLDialect{
 			log.trace("BEFORE conn");
 			 conn = dbManager.getConnection();
 			 log.trace("AFTER conn");
-			 dao = new MetaDao();
+			 dao = MetaDaoFactory.createMetaDao(SQL_DIALECT);
 			 if (null != sqlDialect){
 				 dao.setSqlDialect(sqlDialect);
 			 }

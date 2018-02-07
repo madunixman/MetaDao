@@ -2,3 +2,6 @@
 /dist
 /dist/lib
 *.class
+/target
+.idea/
+.settings

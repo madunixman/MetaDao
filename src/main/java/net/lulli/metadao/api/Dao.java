@@ -1,6 +1,7 @@
-package net.lulli.metadao.model;
+package net.lulli.metadao.api;
 
-import net.lulli.metadao.DbConnectionManager;
+
+import net.lulli.metadao.model.SQLDialect;
 
 public abstract class Dao {
 	//TODO Singleton

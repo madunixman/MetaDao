@@ -5,10 +5,8 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.util.ArrayList;
 import java.util.Properties;
-
 import net.lulli.metadao.DbConnectionManager;
 import net.lulli.utils.PropertiesManager;
-
 import org.apache.log4j.Logger;
 
 

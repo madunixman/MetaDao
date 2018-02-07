@@ -12,8 +12,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
-import net.lulli.metadao.model.Dao;
-import net.lulli.metadao.model.MetaDto;
+import net.lulli.metadao.api.Dao;
+import net.lulli.metadao.api.MetaDto;
 import net.lulli.metadao.model.SQLDialect;
 
 import org.apache.log4j.Logger;
@@ -26,7 +26,7 @@ static Logger log =  Logger.getLogger("MetaDao");
 		//dbConnectionmanager  = DbManager.getInstance();
 	}	
 	
-	public MetaDao(String tableName){
+	private MetaDao(String tableName){
 		this.TABLE_NAME = tableName;
 		//dbConnectionmanager  = DbManager.getInstance();
 	}	
@@ -106,6 +106,8 @@ static Logger log =  Logger.getLogger("MetaDao");
 						 value = kvalue.toString();
 					 }
 					 pstmt.setString(idx,   value);
+					 
+					 //IF cassandra uuid: pstmt.setObject(value.toCharArray(), value)
 					 log.trace("Adding key: [" + key +"] with index: ["+idx+"] with value: + [" + value + "]"); 
 					 idx++;	
 			}
@@ -123,8 +125,6 @@ static Logger log =  Logger.getLogger("MetaDao");
 		}
 		return uuid;
 	}
-	
-	
 	
 	public void update(MetaDto dto, Hashtable wheres, Connection conn){
 		this.TABLE_NAME = dto.getTableName();

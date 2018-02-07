@@ -1,7 +1,7 @@
 package net.lulli.metadao.helper.sqlite;
 
 import net.lulli.metadao.DbConnectionManager;
-import net.lulli.metadao.model.MetaPersistenceManager;
+import net.lulli.metadao.MetaPersistenceManager;
  
 public class SQLitePersistenceManager extends MetaPersistenceManager{
 

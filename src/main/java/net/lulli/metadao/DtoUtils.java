@@ -5,7 +5,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import org.apache.log4j.Logger;
-import net.lulli.metadao.model.MetaDto;
+
+import net.lulli.metadao.api.MetaDto;
 
 
 public class DtoUtils {
@@ -90,19 +91,6 @@ public class DtoUtils {
 		return csv;
 	}
 	
-	/*
-	public static List<MetaDto> csvToDto(String row, String tableName, String recordSeparator, String lineSeparator){
-		List<MetaDto> listOfDto = null;
-		MetaDto singleRow;
-		try{
-			listOfDto = new ArrayList<MetaDto>();
-			singleRow = MetaDto.getNewInstance(tableName);
-		}catch (Exception e) {
-			log.error(e);
-		}
-		return listOfDto;
-	}*/
-
 	public static MetaDto csvToDto(String row, List<String> fields, String tableName, String fieldSeparator, String recordSeparator){
 		MetaDto singleRow  = null;
 		try{
