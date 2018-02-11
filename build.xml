@@ -1,6 +1,6 @@
 <project name="MetaDao" default="dist" basedir=".">
   <property name="project"  value="metadao"/>
-  <property name="version"  value="1.0.0"/>
+  <property name="version"  value="1.0.4-SNAPSHOT"/>
     <description>
         Build file for project ${project}
     </description>

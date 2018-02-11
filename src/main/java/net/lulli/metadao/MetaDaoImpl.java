@@ -1,7 +1,6 @@
 package net.lulli.metadao;
 
 
-import net.lulli.metadao.api.DataConnection;
 import net.lulli.metadao.api.MetaDao;
 import net.lulli.metadao.api.MetaDto;
 import net.lulli.metadao.api.WheresMap;
@@ -30,7 +29,7 @@ public class MetaDaoImpl implements MetaDao
         this.tableName = tableName;
     }
 
-    public boolean dropTable(String tableName, DataConnection dataConnection)
+    public boolean dropTable(String tableName, Connection dataConnection)
     {
         Connection conn = (Connection) dataConnection;
         boolean isDropped = false;
@@ -48,7 +47,7 @@ public class MetaDaoImpl implements MetaDao
     }
 
 
-    public Integer insert(MetaDto dto, DataConnection dataConnection)
+    public Integer insert(MetaDto dto, Connection dataConnection)
     {
         Connection conn = (Connection) dataConnection;
         String retValue = insertLegacy(dto, conn);
@@ -154,13 +153,13 @@ public class MetaDaoImpl implements MetaDao
     }
 
     //TODO add return changed records
-    public Integer update(MetaDto dto, WheresMap wheres, DataConnection dataConnection)
+    public Integer update(MetaDto dto, WheresMap wheres, Connection dataConnection)
     {
         updateLegacy(dto, wheres, dataConnection);
         return new Integer(0);
     }
 
-    private void updateLegacy(MetaDto dto, WheresMap wheres, DataConnection gconn)
+    private void updateLegacy(MetaDto dto, WheresMap wheres, Connection gconn)
     {
         Connection conn = (java.sql.Connection)gconn;
         this.tableName = dto.getTableName();
@@ -244,14 +243,14 @@ public class MetaDaoImpl implements MetaDao
 
 
     //TODO return number of deleted records
-    public Integer delete(MetaDto dto, WheresMap wheres, DataConnection conn)
+    public Integer delete(MetaDto dto, WheresMap wheres, Connection conn)
     {
         deleteLegacy(dto, wheres, conn);
         return new Integer(0);
     }
 
     @Deprecated
-    void deleteLegacy(MetaDto dto, WheresMap wheres, DataConnection dataConnection)
+    void deleteLegacy(MetaDto dto, WheresMap wheres, Connection dataConnection)
     {
         Connection conn = (Connection) dataConnection;
         this.tableName = dto.getTableName();
@@ -325,7 +324,7 @@ public class MetaDaoImpl implements MetaDao
         }
     }
 
-    public MetaDtoImpl descTable(String tableName, DataConnection dataConnection)
+    public MetaDtoImpl descTable(String tableName, Connection dataConnection)
     {
         Connection conn = (Connection) dataConnection;
         this.tableName = tableName;
@@ -383,7 +382,7 @@ public class MetaDaoImpl implements MetaDao
     }
 
 
-    public List select(MetaDtoImpl requestDto, WheresMapImpl wheres, boolean definedAttributes, DataConnection dataConnection)
+    public List select(MetaDtoImpl requestDto, WheresMapImpl wheres, boolean definedAttributes, Connection dataConnection)
     {
         Connection conn = (java.sql.Connection)dataConnection;
         this.tableName = requestDto.getTableName();
@@ -491,7 +490,7 @@ public class MetaDaoImpl implements MetaDao
         return listOfDto;
     }
 
-    public String selectIdWhere(MetaDto requestDto, WheresMapImpl wheres, DataConnection dataConnection, boolean definedAttributes, Integer tadRows)
+    public String selectIdWhere(MetaDto requestDto, WheresMapImpl wheres, Connection dataConnection, boolean definedAttributes, Integer tadRows)
     {
         Connection conn = (java.sql.Connection)dataConnection;
         this.tableName = requestDto.getTableName();
@@ -577,7 +576,7 @@ public class MetaDaoImpl implements MetaDao
 
 
     public Integer selectCount(net.lulli.metadao.api.MetaDto requestDto, WheresMapImpl wheres,
-                               DataConnection dataConnection, boolean definedAttributes)
+                               Connection dataConnection, boolean definedAttributes)
     {
         Connection conn = (java.sql.Connection)dataConnection;
         String retValue = selectCountLegacy(requestDto, wheres, conn, definedAttributes);
@@ -662,7 +661,7 @@ public class MetaDaoImpl implements MetaDao
         return CONTEGGIO;
     }
 
-    public boolean createTable(String tableName, List<String> fields, DataConnection dataConnection)
+    public boolean createTable(String tableName, List<String> fields, Connection dataConnection)
     {
         Connection conn = (Connection)dataConnection;
         boolean isCreated = false;
@@ -698,7 +697,7 @@ public class MetaDaoImpl implements MetaDao
     }
 
 
-    public List<net.lulli.metadao.api.MetaDto> runQuery(String sqlInputString, DataConnection dataConnection)
+    public List<net.lulli.metadao.api.MetaDto> runQuery(String sqlInputString, Connection dataConnection)
     {
         Connection conn = (Connection)dataConnection;
         List<net.lulli.metadao.api.MetaDto> listOfDto = new ArrayList<net.lulli.metadao.api.MetaDto>();

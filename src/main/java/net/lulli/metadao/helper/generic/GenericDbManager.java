@@ -2,7 +2,6 @@ package net.lulli.metadao.helper.generic;
 
 
 import net.lulli.metadao.DbConnectionManager;
-import net.lulli.metadao.SqlConnection;
 import net.lulli.utils.PropertiesManager;
 import org.apache.log4j.Logger;
 
@@ -28,16 +27,16 @@ public class GenericDbManager extends DbConnectionManager
 
     protected void init()
     {
-        SqlConnection singleConn;
+        Connection singleConn;
         connection_counter = 0;
-        connections = new ArrayList<SqlConnection>();
+        connections = new ArrayList<Connection>();
         for (int i = 0; i < pool_size; i++)
         {
             try
             {
                 System.out.println("DRIVER_CLASS_NAME=" + DRIVER_CLASS_NAME);
                 Class.forName(DRIVER_CLASS_NAME);
-                singleConn = (SqlConnection) DriverManager.getConnection(JDBC_URL, DB_USER, DB_PASSWORD);
+                singleConn = DriverManager.getConnection(JDBC_URL, DB_USER, DB_PASSWORD);
                 connections.add(singleConn);
             } catch (Exception e)
             {

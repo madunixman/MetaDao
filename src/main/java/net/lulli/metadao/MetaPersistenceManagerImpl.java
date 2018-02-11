@@ -7,6 +7,7 @@ import net.lulli.metadao.impl.MetaDtoImpl;
 import net.lulli.metadao.model.SQLDialect;
 import org.apache.log4j.Logger;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.util.*;
 
@@ -30,7 +31,7 @@ public abstract class MetaPersistenceManagerImpl implements MetaPersistenceManag
     private void insert(MetaDtoImpl dto)
     {
         DbConnectionManager dbManager = getDbConnectionManager();
-        SqlConnection conn = null;
+        Connection conn = null;
         MetaDaoImpl dao;
         try
         {
@@ -58,7 +59,7 @@ public abstract class MetaPersistenceManagerImpl implements MetaPersistenceManag
     public void update(MetaDtoImpl dto, WheresMap wheres)
     {
         DbConnectionManager dbManager = getDbConnectionManager();
-        SqlConnection conn = null;
+        Connection conn = null;
         MetaDaoImpl dao;
         try
         {
@@ -84,7 +85,7 @@ public abstract class MetaPersistenceManagerImpl implements MetaPersistenceManag
     private void delete(MetaDtoImpl dto, WheresMap wheres)
     {
         DbConnectionManager dbManager = getDbConnectionManager();
-        SqlConnection conn = null;
+        Connection conn = null;
         MetaDaoImpl dao;
         try
         {
@@ -114,7 +115,7 @@ public abstract class MetaPersistenceManagerImpl implements MetaPersistenceManag
         boolean isPresent = false;
         String tableName = dto.getTableName();
         String id = "";
-        SqlConnection conn = null;
+        Connection conn = null;
         DbConnectionManager dbManager = getDbConnectionManager();
         MetaDaoImpl dao = null;
         try
@@ -168,7 +169,7 @@ public abstract class MetaPersistenceManagerImpl implements MetaPersistenceManag
     {
         //DbManager dbManager = DbManager.getInstance();
         DbConnectionManager dbManager = getDbConnectionManager();
-        SqlConnection conn = null;
+        Connection conn = null;
         MetaDaoImpl dao;
         Integer count = 0;
         try
@@ -225,7 +226,7 @@ public abstract class MetaPersistenceManagerImpl implements MetaPersistenceManag
         boolean created = false;
         DbConnectionManager dbManager;
         MetaDaoImpl dao;
-        SqlConnection conn;
+        Connection conn;
         try
         {
             dbManager = getDbConnectionManager();
@@ -244,7 +245,7 @@ public abstract class MetaPersistenceManagerImpl implements MetaPersistenceManag
         boolean dropped = false;
         DbConnectionManager dbManager;
         MetaDaoImpl dao;
-        SqlConnection conn;
+        Connection conn;
         try
         {
             dbManager = getDbConnectionManager();
@@ -272,7 +273,7 @@ public abstract class MetaPersistenceManagerImpl implements MetaPersistenceManag
     {
         log.trace("BEGIN search");
         DbConnectionManager dbManager = getDbConnectionManager();
-        SqlConnection conn = null;
+        Connection conn = null;
         MetaDaoImpl dao;
         List<net.lulli.metadao.api.MetaDto> results = null;
 
@@ -302,7 +303,7 @@ public abstract class MetaPersistenceManagerImpl implements MetaPersistenceManag
     {
         int retvalue = 0;
         PreparedStatement pstmt = null;
-        SqlConnection conn = null;
+        Connection conn = null;
         DbConnectionManager dbManager = getDbConnectionManager();
         try
         {
