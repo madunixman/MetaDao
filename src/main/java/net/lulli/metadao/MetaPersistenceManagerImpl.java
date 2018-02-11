@@ -24,11 +24,11 @@ public abstract class MetaPersistenceManagerImpl implements MetaPersistenceManag
     //TODO return number of inserted records
     public Integer insert(MetaDto dto)
     {
-        insert(dto);
+        insertLegacy(dto);
         return new Integer(0);
     }
 
-    private void insert(MetaDtoImpl dto)
+    private void insertLegacy(MetaDto dto)
     {
         DbConnectionManager dbManager = getDbConnectionManager();
         Connection conn = null;
@@ -52,11 +52,11 @@ public abstract class MetaPersistenceManagerImpl implements MetaPersistenceManag
     //TODO return number of updated fields
     public Integer update(MetaDto dto, WheresMap wheres)
     {
-        update(dto, wheres);
+        updateLegacy(dto, wheres);
         return new Integer(0);
     }
 
-    public void update(MetaDtoImpl dto, WheresMap wheres)
+    public void updateLegacy(MetaDto dto, WheresMap wheres)
     {
         DbConnectionManager dbManager = getDbConnectionManager();
         Connection conn = null;
@@ -78,11 +78,11 @@ public abstract class MetaPersistenceManagerImpl implements MetaPersistenceManag
     //TODO return number of inserted records
     public Integer delete(MetaDto dto, WheresMap wheres)
     {
-        delete(dto, wheres);
+        deleteLegacy(dto, wheres);
         return new Integer(0);
     }
 
-    private void delete(MetaDtoImpl dto, WheresMap wheres)
+    private void deleteLegacy(MetaDto dto, WheresMap wheres)
     {
         DbConnectionManager dbManager = getDbConnectionManager();
         Connection conn = null;
