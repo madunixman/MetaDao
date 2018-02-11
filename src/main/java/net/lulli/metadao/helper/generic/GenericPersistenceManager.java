@@ -4,11 +4,12 @@ import java.util.Properties;
 
 import net.lulli.metadao.DbConnectionManager;
 import net.lulli.metadao.DbManager;
-import net.lulli.metadao.MetaPersistenceManager;
+import net.lulli.metadao.MetaPersistenceManagerImpl;
 import net.lulli.utils.PropertiesManager;
 
  
-public class GenericPersistenceManager extends MetaPersistenceManager{
+public class GenericPersistenceManager extends MetaPersistenceManagerImpl
+{
 	
 	/**
 	 * getter for {@link DbManager} class

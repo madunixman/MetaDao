@@ -1,7 +1,11 @@
 package net.lulli.metadao;
 
-import net.lulli.metadao.api.Dao;
+
+import net.lulli.metadao.api.DataConnection;
+import net.lulli.metadao.api.MetaDao;
 import net.lulli.metadao.api.MetaDto;
+import net.lulli.metadao.api.WheresMap;
+import net.lulli.metadao.impl.MetaDtoImpl;
 import org.apache.log4j.Logger;
 
 import java.sql.Connection;
@@ -11,23 +15,50 @@ import java.sql.ResultSetMetaData;
 import java.util.*;
 
 
-public class MetaDao extends Dao
+public class MetaDaoImpl implements MetaDao
 {
-    static Logger log = Logger.getLogger("MetaDao");
+    static Logger log = Logger.getLogger("MetaDaoImpl");
+    private String tableName;
 
-    protected MetaDao()
+    protected MetaDaoImpl()
     {
         //
     }
 
-    protected MetaDao(String tableName)
+    protected MetaDaoImpl(String tableName)
     {
-        this.TABLE_NAME = tableName;
+        this.tableName = tableName;
     }
 
-    public String insert(MetaDto dto, Connection conn)
+    public boolean dropTable(String tableName, DataConnection dataConnection)
     {
-        this.TABLE_NAME = dto.getTableName();
+        Connection conn = (Connection) dataConnection;
+        boolean isDropped = false;
+        try
+        {
+            String sqlString = "DROP TABLE " + tableName + " ";
+            PreparedStatement pstmt = null;
+            pstmt = conn.prepareStatement(sqlString);
+            isDropped = pstmt.execute();
+        } catch (Exception e)
+        {
+            log.error(e);
+        }
+        return isDropped;
+    }
+
+
+    public Integer insert(MetaDto dto, DataConnection dataConnection)
+    {
+        Connection conn = (Connection) dataConnection;
+        String retValue = insertLegacy(dto, conn);
+        return Integer.valueOf(retValue);
+    }
+
+    private String insertLegacy(MetaDto dto, Connection conn)
+    {
+
+        this.tableName = dto.getTableName();
         log.debug("BEGIN insert()");
         String uuid = null;
 
@@ -39,7 +70,7 @@ public class MetaDao extends Dao
         PreparedStatement pstmt = null;
         String k;
         boolean isFirstField = true;
-        String sql = "INSERT INTO " + TABLE_NAME + " " +
+        String sql = "INSERT INTO " + tableName + " " +
                 "(";
         while (keysIterator.hasNext())
         {
@@ -122,11 +153,19 @@ public class MetaDao extends Dao
         }
     }
 
-    public void update(MetaDto dto, Hashtable wheres, Connection conn)
+    //TODO add return changed records
+    public Integer update(MetaDto dto, WheresMap wheres, DataConnection dataConnection)
     {
-        this.TABLE_NAME = dto.getTableName();
+        updateLegacy(dto, wheres, dataConnection);
+        return new Integer(0);
+    }
+
+    private void updateLegacy(MetaDto dto, WheresMap wheres, DataConnection gconn)
+    {
+        Connection conn = (java.sql.Connection)gconn;
+        this.tableName = dto.getTableName();
         log.debug("BEGIN insert()");
-        MetaDto requestDto = (MetaDto) dto;
+        MetaDtoImpl requestDto = (MetaDtoImpl) dto;
         log.debug("BEGIN insert()");
         //Connection conn = null;
         PreparedStatement pstmt = null;
@@ -134,7 +173,7 @@ public class MetaDao extends Dao
         Iterator<String> keysIterator_set = keys.iterator();
 
         boolean isFirst = true;
-        String sql = "UPDATE " + TABLE_NAME + " set ";
+        String sql = "UPDATE " + tableName + " set ";
         int index = 0;
         String k;
         while (keysIterator_set.hasNext())
@@ -204,17 +243,26 @@ public class MetaDao extends Dao
     }
 
 
-    public void delete(MetaDto dto, Hashtable wheres, Connection conn)
+    //TODO return number of deleted records
+    public Integer delete(MetaDto dto, WheresMap wheres, DataConnection conn)
     {
-        this.TABLE_NAME = dto.getTableName();
+        deleteLegacy(dto, wheres, conn);
+        return new Integer(0);
+    }
+
+    @Deprecated
+    void deleteLegacy(MetaDto dto, WheresMap wheres, DataConnection dataConnection)
+    {
+        Connection conn = (Connection) dataConnection;
+        this.tableName = dto.getTableName();
         log.debug("BEGIN insert()");
-        MetaDto requestDto = (MetaDto) dto;
+        MetaDtoImpl requestDto = (MetaDtoImpl) dto;
         log.debug("BEGIN insert()");
         PreparedStatement pstmt = null;
         Set<String> keys = dto.keySet();
         Iterator<String> keysIterator_set = keys.iterator();
 
-        String sql = "DELETE FROM " + TABLE_NAME + " ";
+        String sql = "DELETE FROM " + tableName + " ";
         int index = 0;
         String k;
         index = 1;
@@ -277,16 +325,17 @@ public class MetaDao extends Dao
         }
     }
 
-    public MetaDto descTable(String tableName, Connection conn)
+    public MetaDtoImpl descTable(String tableName, DataConnection dataConnection)
     {
-        this.TABLE_NAME = tableName;
+        Connection conn = (Connection) dataConnection;
+        this.tableName = tableName;
         List listOfDto = new ArrayList();
         PreparedStatement pstmt = null;
-        MetaDto responseDto = null;
+        MetaDtoImpl responseDto = null;
         ResultSet rs;
         try
         {
-            String sqlString = "select * from " + TABLE_NAME + " limit 1";
+            String sqlString = "select * from " + this.tableName + " limit 1";
             int idx = 0;
 
             log.debug("sqlString = [" + sqlString + "]");
@@ -296,7 +345,7 @@ public class MetaDao extends Dao
             while (rs.next())
             {
                 log.debug("rs.next()");
-                responseDto = new MetaDto();
+                responseDto = new MetaDtoImpl();
                 Set<String> keys;
 
                 ResultSetMetaData md = rs.getMetaData();
@@ -334,16 +383,17 @@ public class MetaDao extends Dao
     }
 
 
-    public List select(MetaDto requestDto, Hashtable wheres, boolean definedAttributes, Connection conn)
+    public List select(MetaDtoImpl requestDto, WheresMapImpl wheres, boolean definedAttributes, DataConnection dataConnection)
     {
-        this.TABLE_NAME = requestDto.getTableName();
+        Connection conn = (java.sql.Connection)dataConnection;
+        this.tableName = requestDto.getTableName();
         List listOfDto = new ArrayList();
         PreparedStatement pstmt = null;
-        MetaDto responseDto = null;
+        MetaDtoImpl responseDto = null;
         ResultSet rs;
         try
         {
-            String sqlString = "SELECT * FROM " + TABLE_NAME + " WHERE ";
+            String sqlString = "SELECT * FROM " + tableName + " WHERE ";
             Enumeration whereFields = wheres.keys();
             int idx = 0;
             while (whereFields.hasMoreElements())
@@ -396,7 +446,7 @@ public class MetaDao extends Dao
             while (rs.next())
             {
                 log.debug("rs.next()");
-                responseDto = new MetaDto();
+                responseDto = new MetaDtoImpl();
                 Set<String> keys;
                 if (definedAttributes)
                 {
@@ -441,17 +491,18 @@ public class MetaDao extends Dao
         return listOfDto;
     }
 
-    public String selectIdWhere(MetaDto requestDto, Hashtable wheres, Connection conn, boolean definedAttributes, Integer tadRows)
+    public String selectIdWhere(MetaDto requestDto, WheresMapImpl wheres, DataConnection dataConnection, boolean definedAttributes, Integer tadRows)
     {
-        this.TABLE_NAME = requestDto.getTableName();
+        Connection conn = (java.sql.Connection)dataConnection;
+        this.tableName = requestDto.getTableName();
         List listOfDto = new ArrayList();
         PreparedStatement pstmt = null;
-        MetaDto responseDto = null;
+        MetaDtoImpl responseDto = null;
         ResultSet rs;
         String id = null;
         try
         {
-            String sqlString = "SELECT id FROM " + TABLE_NAME + " WHERE ";
+            String sqlString = "SELECT id FROM " + tableName + " WHERE ";
             Enumeration whereFields = wheres.keys();
             int idx = 0;
             while (whereFields.hasMoreElements())
@@ -524,17 +575,26 @@ public class MetaDao extends Dao
         return id;
     }
 
-    public String selectCount(MetaDto requestDto, Hashtable wheres, Connection conn, boolean definedAttributes)
+
+    public Integer selectCount(net.lulli.metadao.api.MetaDto requestDto, WheresMapImpl wheres,
+                               DataConnection dataConnection, boolean definedAttributes)
     {
-        this.TABLE_NAME = requestDto.getTableName();
+        Connection conn = (java.sql.Connection)dataConnection;
+        String retValue = selectCountLegacy(requestDto, wheres, conn, definedAttributes);
+        return Integer.valueOf(retValue);
+    }
+
+    private String selectCountLegacy(net.lulli.metadao.api.MetaDto requestDto, WheresMapImpl wheres, Connection conn, boolean definedAttributes)
+    {
+        this.tableName = requestDto.getTableName();
         List listOfDto = new ArrayList();
         PreparedStatement pstmt = null;
-        MetaDto responseDto = null;
+        MetaDtoImpl responseDto = null;
         ResultSet rs;
         String CONTEGGIO = "";
         try
         {
-            String sqlString = "SELECT count(*) as CONTEGGIO FROM " + TABLE_NAME + " WHERE ";
+            String sqlString = "SELECT count(*) as CONTEGGIO FROM " + tableName + " WHERE ";
             Enumeration whereFields = wheres.keys();
             int idx = 0;
             while (whereFields.hasMoreElements())
@@ -602,8 +662,9 @@ public class MetaDao extends Dao
         return CONTEGGIO;
     }
 
-    public boolean createTable(String tableName, List<String> fields, Connection conn)
+    public boolean createTable(String tableName, List<String> fields, DataConnection dataConnection)
     {
+        Connection conn = (Connection)dataConnection;
         boolean isCreated = false;
         String sql = "CREATE TABLE " + tableName + " (";
         String firstField;
@@ -636,28 +697,13 @@ public class MetaDao extends Dao
         return isCreated;
     }
 
-    public boolean dropTable(String tableName, Connection conn)
-    {
-        boolean isDropped = false;
-        try
-        {
-            String sqlString = "DROP TABLE " + tableName + " ";
-            PreparedStatement pstmt = null;
-            pstmt = conn.prepareStatement(sqlString);
-            isDropped = pstmt.execute();
-        } catch (Exception e)
-        {
-            log.error(e);
-        }
-        return isDropped;
-    }
 
-    public List<MetaDto> runQuery(String sqlInputString, Connection conn)
+    public List<net.lulli.metadao.api.MetaDto> runQuery(String sqlInputString, DataConnection dataConnection)
     {
-
-        List<MetaDto> listOfDto = new ArrayList<MetaDto>();
+        Connection conn = (Connection)dataConnection;
+        List<net.lulli.metadao.api.MetaDto> listOfDto = new ArrayList<net.lulli.metadao.api.MetaDto>();
         PreparedStatement pstmt = null;
-        MetaDto responseDto = null;
+        MetaDtoImpl responseDto = null;
         ResultSet rs;
         try
         {
@@ -671,7 +717,7 @@ public class MetaDao extends Dao
             while (rs.next())
             {
                 log.debug("rs.next()");
-                responseDto = new MetaDto();
+                responseDto = new MetaDtoImpl();
                 Set<String> keys;
 
                 ResultSetMetaData md = rs.getMetaData();
@@ -708,4 +754,18 @@ public class MetaDao extends Dao
         }
         return listOfDto;
     }
+
+    @Deprecated
+    public String getDialect()
+    {
+        return null;
+    }
+
+    @Deprecated
+    public void setDialect(String s)
+    {
+
+    }
+
+
 }

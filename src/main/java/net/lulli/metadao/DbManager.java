@@ -2,7 +2,6 @@ package net.lulli.metadao;
 
 import net.lulli.utils.PropertiesManager;
 
-import java.sql.Connection;
 import java.sql.DriverManager;
 import java.util.ArrayList;
 import java.util.Properties;
@@ -23,15 +22,15 @@ public class DbManager extends DbConnectionManager
 
     protected void init()
     {
-        Connection singleConn;
+        SqlConnection singleConn;
         connection_counter = 0;
-        connections = new ArrayList<Connection>();
+        connections = new ArrayList<SqlConnection>();
         for (int i = 0; i < pool_size; i++)
         {
             try
             {
                 Class.forName(DRIVER_CLASS_NAME);
-                singleConn = DriverManager.getConnection(JDBC_URL, DB_USER, DB_PASSWORD);
+                singleConn = (SqlConnection) DriverManager.getConnection(JDBC_URL, DB_USER, DB_PASSWORD);
                 connections.add(singleConn);
             } catch (Exception e)
             {

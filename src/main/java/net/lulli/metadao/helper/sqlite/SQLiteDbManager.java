@@ -1,6 +1,7 @@
 package net.lulli.metadao.helper.sqlite;
 
 import net.lulli.metadao.DbConnectionManager;
+import net.lulli.metadao.SqlConnection;
 import net.lulli.utils.PropertiesManager;
 import org.apache.log4j.Logger;
 
@@ -22,14 +23,14 @@ public class SQLiteDbManager extends DbConnectionManager
     protected String DB_PASSWORD;
     static Logger log = Logger.getLogger("SQLiteDbManager");
 
-    public Connection getConnection()
+    public SqlConnection getConnection()
     {
-        Connection con = null;
+        SqlConnection con = null;
         try
         {
             Class.forName(DRIVER_CLASS_NAME);
             //con = DriverManager.getConnection(JDBC_URL,DB_USER,DB_PASSWORD);
-            con = DriverManager.getConnection(JDBC_URL);
+            con = (SqlConnection) DriverManager.getConnection(JDBC_URL);
             //TODO:::
             //initializeWAL(con);
 

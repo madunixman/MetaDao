@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>net.lulli</groupId>
   <artifactId>metadao</artifactId>
-  <version>1.0.3-SNAPSHOT</version>
+  <version>1.0.4-SNAPSHOT</version>
   <description>A MetaDataAccessObject library</description>
   <!-- homepage for the project -->
   <url>http://dev.lulli.net/projects/metadao</url>
@@ -43,6 +43,11 @@
 <!-- ****************************************** -->
 
 <dependencies>
+  <dependency>
+    <groupId>net.lulli</groupId>
+    <artifactId>metadao-api</artifactId>
+    <version>${project.version}</version>
+  </dependency>
   <dependency>
     <groupId>log4j</groupId>
     <artifactId>log4j</artifactId>

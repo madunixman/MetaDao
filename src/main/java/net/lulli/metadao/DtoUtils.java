@@ -1,6 +1,7 @@
 package net.lulli.metadao;
 
 import net.lulli.metadao.api.MetaDto;
+import net.lulli.metadao.impl.MetaDtoImpl;
 import org.apache.log4j.Logger;
 
 import java.util.ArrayList;
@@ -111,7 +112,7 @@ public class DtoUtils
         MetaDto singleRow = null;
         try
         {
-            singleRow = MetaDto.getNewInstance(tableName);
+            singleRow = MetaDtoImpl.of(tableName);
             String rows[] = row.split(fieldSeparator);
 
             String key;

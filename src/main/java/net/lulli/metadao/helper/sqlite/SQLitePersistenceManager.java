@@ -1,9 +1,9 @@
 package net.lulli.metadao.helper.sqlite;
 
 import net.lulli.metadao.DbConnectionManager;
-import net.lulli.metadao.MetaPersistenceManager;
+import net.lulli.metadao.MetaPersistenceManagerImpl;
 
-public class SQLitePersistenceManager extends MetaPersistenceManager
+public class SQLitePersistenceManager  extends MetaPersistenceManagerImpl
 {
     String dbName;
 
@@ -30,5 +30,8 @@ public class SQLitePersistenceManager extends MetaPersistenceManager
         this.dbName = dbName;
     }
 
-
+    //@Deprecated
+    //public Integer selectCount(MetaDtoImpl var1, Map wheres, boolean var3){
+    //       return new Integer(0);
+    //}
 }

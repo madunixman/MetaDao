@@ -1,34 +1,42 @@
 package net.lulli.metadao;
 
-import net.lulli.metadao.api.IMetaPersistenceManager;
 import net.lulli.metadao.api.MetaDto;
+import net.lulli.metadao.api.MetaPersistenceManager;
+import net.lulli.metadao.api.WheresMap;
+import net.lulli.metadao.impl.MetaDtoImpl;
 import net.lulli.metadao.model.SQLDialect;
 import org.apache.log4j.Logger;
 
-import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.util.*;
 
 
-public abstract class MetaPersistenceManager implements IMetaPersistenceManager
+public abstract class MetaPersistenceManagerImpl implements MetaPersistenceManager
 {
-    static Logger log = Logger.getLogger("MetaPersistenceManager");
+    static Logger log = Logger.getLogger("MetaPersistenceManagerImpl");
     private String tableName;
 
     String SQL_DIALECT = SQLDialect.STANDARD;
 
     public abstract DbConnectionManager getDbConnectionManager();
 
-    public void insert(MetaDto dto)
+    //TODO return number of inserted records
+    public Integer insert(MetaDto dto)
+    {
+        insert(dto);
+        return new Integer(0);
+    }
+
+    private void insert(MetaDtoImpl dto)
     {
         DbConnectionManager dbManager = getDbConnectionManager();
-        Connection conn = null;
-        MetaDao dao;
+        SqlConnection conn = null;
+        MetaDaoImpl dao;
         try
         {
             this.tableName = dto.getTableName();
             conn = dbManager.getConnection();
-            log.trace("new MetaDao with tableName: [" + tableName + "]");
+            log.trace("new MetaDaoImpl with tableName: [" + tableName + "]");
             dao = MetaDaoFactory.createMetaDao(SQL_DIALECT);
             dao.insert(dto, conn);
         } catch (Exception e)
@@ -40,11 +48,18 @@ public abstract class MetaPersistenceManager implements IMetaPersistenceManager
         }
     }
 
-    public void update(MetaDto dto, Hashtable wheres)
+    //TODO return number of updated fields
+    public Integer update(MetaDto dto, WheresMap wheres)
+    {
+        update(dto, wheres);
+        return new Integer(0);
+    }
+
+    public void update(MetaDtoImpl dto, WheresMap wheres)
     {
         DbConnectionManager dbManager = getDbConnectionManager();
-        Connection conn = null;
-        MetaDao dao;
+        SqlConnection conn = null;
+        MetaDaoImpl dao;
         try
         {
             this.tableName = dto.getTableName();
@@ -59,12 +74,18 @@ public abstract class MetaPersistenceManager implements IMetaPersistenceManager
             dbManager.releaseConnection(conn);
         }
     }
+    //TODO return number of inserted records
+    public Integer delete(MetaDto dto, WheresMap wheres)
+    {
+        delete(dto, wheres);
+        return new Integer(0);
+    }
 
-    public void delete(MetaDto dto, Hashtable wheres)
+    private void delete(MetaDtoImpl dto, WheresMap wheres)
     {
         DbConnectionManager dbManager = getDbConnectionManager();
-        Connection conn = null;
-        MetaDao dao;
+        SqlConnection conn = null;
+        MetaDaoImpl dao;
         try
         {
             this.tableName = dto.getTableName();
@@ -81,24 +102,30 @@ public abstract class MetaPersistenceManager implements IMetaPersistenceManager
     }
 
 
-    public String save(MetaDto dto, Hashtable wheres)
+    public Integer save(MetaDto dto, WheresMap wheres)
+    {
+        String retValue = saveLegacy(dto, (WheresMapImpl) wheres);
+        return Integer.valueOf(retValue);
+    }
+
+    String saveLegacy(MetaDto dto, WheresMapImpl wheres)
     {
         //1 Verifica se il docVenditaDettaglio e' presente
         boolean isPresent = false;
         String tableName = dto.getTableName();
         String id = "";
-        Connection conn = null;
+        SqlConnection conn = null;
         DbConnectionManager dbManager = getDbConnectionManager();
-        MetaDao dao = null;
+        MetaDaoImpl dao = null;
         try
         {
             dao = MetaDaoFactory.createMetaDao(SQL_DIALECT);
             conn = dbManager.getConnection();
-            String presenti = dao.selectCount(dto, wheres, conn, false);
+            Integer presenti = dao.selectCount(dto, wheres, conn, false);
             log.trace("TABLE:" + dto.getTableName());
             //isPresent = pm.isPresentByField(tableName, id_Azienda, codField, codValue);
             log.trace("[1]: CHECK PRESENCE");
-            if (Integer.valueOf(presenti) > 0)
+            if (presenti > 0)
             {
                 removeNullKey(dto);
                 dao.update(dto, wheres, conn);
@@ -128,7 +155,7 @@ public abstract class MetaPersistenceManager implements IMetaPersistenceManager
         return id;
     }
 
-    private void removeNullKey(MetaDto dto)
+    private void removeNullKey(net.lulli.metadao.api.MetaDto dto)
     {
         if (dto.containsKey(null))
         {
@@ -137,18 +164,18 @@ public abstract class MetaPersistenceManager implements IMetaPersistenceManager
         }
     }
 
-    public Integer selectCount(MetaDto requestDto, Hashtable wheres, boolean definedAttributes)
+    public Integer selectCount(MetaDto requestDto, WheresMap wheres, boolean definedAttributes)
     {
         //DbManager dbManager = DbManager.getInstance();
         DbConnectionManager dbManager = getDbConnectionManager();
-        Connection conn = null;
-        MetaDao dao;
+        SqlConnection conn = null;
+        MetaDaoImpl dao;
         Integer count = 0;
         try
         {
             conn = dbManager.getConnection();
             dao = MetaDaoFactory.createMetaDao(SQL_DIALECT);
-            count = Integer.valueOf(dao.selectCount(requestDto, wheres, conn, definedAttributes));
+            count = Integer.valueOf(dao.selectCount(requestDto, (WheresMapImpl) wheres, conn, definedAttributes));
         } catch (Exception e)
         {
             log.error("" + e);
@@ -174,10 +201,10 @@ public abstract class MetaPersistenceManager implements IMetaPersistenceManager
         List<String> fieldList = new ArrayList<String>();
         try
         {
-            MetaDto requestDto = MetaDto.getNewInstance(tableName);
+            net.lulli.metadao.api.MetaDto requestDto = MetaDtoImpl.of(tableName);
             Hashtable wheres = null;
-            List<MetaDto> risultati = runQuery("select * from " + tableName);
-            MetaDto rigaZero = risultati.get(0); //BAD: funziona solo se la tabella ha almeno 1 record!!
+            List<net.lulli.metadao.api.MetaDto> risultati = runQuery("select * from " + tableName);
+            net.lulli.metadao.api.MetaDto rigaZero = risultati.get(0); //BAD: funziona solo se la tabella ha almeno 1 record!!
             Set<String> keys = rigaZero.keySet();
             Iterator<String> iter = keys.iterator();
             String field;
@@ -197,8 +224,8 @@ public abstract class MetaPersistenceManager implements IMetaPersistenceManager
     {
         boolean created = false;
         DbConnectionManager dbManager;
-        MetaDao dao;
-        Connection conn;
+        MetaDaoImpl dao;
+        SqlConnection conn;
         try
         {
             dbManager = getDbConnectionManager();
@@ -216,8 +243,8 @@ public abstract class MetaPersistenceManager implements IMetaPersistenceManager
     {
         boolean dropped = false;
         DbConnectionManager dbManager;
-        MetaDao dao;
-        Connection conn;
+        MetaDaoImpl dao;
+        SqlConnection conn;
         try
         {
             dbManager = getDbConnectionManager();
@@ -241,13 +268,13 @@ public abstract class MetaPersistenceManager implements IMetaPersistenceManager
         SQL_DIALECT = sqlDialect;
     }
 
-    public List<MetaDto> runQuery(String sqlInputString)
+    public List<net.lulli.metadao.api.MetaDto> runQuery(String sqlInputString)
     {
         log.trace("BEGIN search");
         DbConnectionManager dbManager = getDbConnectionManager();
-        Connection conn = null;
-        MetaDao dao;
-        List<MetaDto> results = null;
+        SqlConnection conn = null;
+        MetaDaoImpl dao;
+        List<net.lulli.metadao.api.MetaDto> results = null;
 
         String sqlDialect = this.SQL_DIALECT;
         try
@@ -258,7 +285,7 @@ public abstract class MetaPersistenceManager implements IMetaPersistenceManager
             dao = MetaDaoFactory.createMetaDao(SQL_DIALECT);
             if (null != sqlDialect)
             {
-                dao.setSqlDialect(sqlDialect);
+                dao.setDialect(sqlDialect);
             }
             results = dao.runQuery(sqlInputString, conn);
         } catch (Exception e)
@@ -275,7 +302,7 @@ public abstract class MetaPersistenceManager implements IMetaPersistenceManager
     {
         int retvalue = 0;
         PreparedStatement pstmt = null;
-        Connection conn = null;
+        SqlConnection conn = null;
         DbConnectionManager dbManager = getDbConnectionManager();
         try
         {
