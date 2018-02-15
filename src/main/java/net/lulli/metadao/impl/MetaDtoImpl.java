@@ -4,9 +4,9 @@ import java.util.LinkedHashMap;
 
 public class MetaDtoImpl extends LinkedHashMap implements net.lulli.metadao.api.MetaDto
 {
-    private String tableName;
+    private static String tableName;
     private String recordType;
-
+    private static String idField;
 
     public static net.lulli.metadao.api.MetaDto of(String tableName)
     {
@@ -22,6 +22,12 @@ public class MetaDtoImpl extends LinkedHashMap implements net.lulli.metadao.api.
         return dto;
     }
 
+    public String getIdField()
+    {
+        return idField;
+    }
+
+
     public void put(String key, String value)
     {
         super.put(key, value);
@@ -33,8 +39,7 @@ public class MetaDtoImpl extends LinkedHashMap implements net.lulli.metadao.api.
         if (null != o)
         {
             return o.toString();
-        }
-        else
+        } else
         {
             return null;
         }
