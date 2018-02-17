@@ -75,6 +75,7 @@ public abstract class MetaPersistenceManagerImpl implements MetaPersistenceManag
             dbManager.releaseConnection(conn);
         }
     }
+
     //TODO return number of inserted records
     public Integer delete(MetaDto dto, WheresMap wheres)
     {
@@ -121,39 +122,50 @@ public abstract class MetaPersistenceManagerImpl implements MetaPersistenceManag
         try
         {
             dao = MetaDaoFactory.createMetaDao(SQL_DIALECT);
-            conn = dbManager.getConnection();
-            Integer presenti = dao.selectCount(dto, wheres, conn, false);
-            log.trace("TABLE:" + dto.getTableName());
-            //isPresent = pm.isPresentByField(tableName, id_Azienda, codField, codValue);
-            log.trace("[1]: CHECK PRESENCE");
-            if (presenti > 0)
+            if (null != dao)
             {
-                removeNullKey(dto);
-                dao.update(dto, wheres, conn);
-            } else
-            {
-                //3 Se non presente inserisce
-                insert(dto);
-                log.trace("[3]: INSERT");
+                conn = dbManager.getConnection();
+                Integer presenti = dao.selectCount(dto, wheres, conn, false);
+                log.trace("TABLE:" + dto.getTableName());
+                //isPresent = pm.isPresentByField(tableName, id_Azienda, codField, codValue);
+                log.trace("[1]: CHECK PRESENCE");
+                if (presenti > 0)
+                {
+                    removeNullKey(dto);
+                    dao.update(dto, wheres, conn);
+                } else
+                {
+                    //3 Se non presente inserisce
+                    insert(dto);
+                    log.trace("[3]: INSERT");
+                }
             }
             //4 restituisce id inserito
         } catch (Exception e)
         {
             log.error("Insert/Update FALLITA" + e);
         }
-        try
+        if (null != dao)
         {
-            //pm.select
-            id = dao.selectIdWhere(dto, wheres, conn, false, 1);
-        } catch (Exception e)
+            try
+            {
+                id = dao.selectIdWhere(dto, wheres, conn, false, 1);
+            } catch (Exception e)
+            {
+                log.error("Cannot decode record from table=[" + tableName + "]");
+            } finally
+            {
+                dbManager.releaseConnection(conn);
+            }
+            log.trace("[4]: RETURN_ID");
+            return id;
+        } else
+
         {
-            log.error("Cannot decode record from table=[" + tableName + "]");
-        } finally
-        {
-            dbManager.releaseConnection(conn);
+            return "0";
+
         }
-        log.trace("[4]: RETURN_ID");
-        return id;
+
     }
 
     private void removeNullKey(net.lulli.metadao.api.MetaDto dto)
@@ -176,7 +188,7 @@ public abstract class MetaPersistenceManagerImpl implements MetaPersistenceManag
         {
             conn = dbManager.getConnection();
             dao = MetaDaoFactory.createMetaDao(SQL_DIALECT);
-            count = Integer.valueOf(dao.selectCount(requestDto, (WheresMapImpl) wheres, conn, definedAttributes));
+            count = dao.selectCount(requestDto, (WheresMapImpl) wheres, conn, definedAttributes);
         } catch (Exception e)
         {
             log.error("" + e);
@@ -318,7 +330,10 @@ public abstract class MetaPersistenceManagerImpl implements MetaPersistenceManag
         {
             try
             {
-                pstmt.close();
+                if (null != pstmt)
+                {
+                    pstmt.close();
+                }
             } catch (Exception e)
             {
                 log.error(e.getMessage());

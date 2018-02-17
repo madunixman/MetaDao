@@ -126,7 +126,7 @@ public class DtoUtils
                 {
                     log.debug("value.length() =" + value.length());
                     log.debug("lineSeparator.length() =" + recordSeparator.length());
-                    value.substring(0, value.length() - recordSeparator.length());
+                    value = value.substring(0, value.length() - recordSeparator.length());
                 } else
                 {
                     singleRow.put(key, value);
@@ -156,7 +156,7 @@ public class DtoUtils
                 if (i == (rows.length - 1))
                 {
                     log.debug("lineSeparator.length() =" + recordSeparator.length());
-                    value.substring(0, value.length() - recordSeparator.length());
+                    value = value.substring(0, value.length() - recordSeparator.length());
                     log.debug("AFTER");
                 }
                 fields.add(value);

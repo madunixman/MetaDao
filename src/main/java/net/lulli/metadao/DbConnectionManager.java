@@ -64,7 +64,7 @@ public abstract class DbConnectionManager
             }
         } catch (Exception e)
         {
-            e.printStackTrace();
+            log.error(e);
         }
         return con;
     }
@@ -91,7 +91,7 @@ public abstract class DbConnectionManager
             }
         } catch (Exception e)
         {
-            e.printStackTrace();
+            log.error(e);
         }
     }
 

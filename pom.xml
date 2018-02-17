@@ -7,14 +7,17 @@
   <!-- homepage for the project -->
   <url>http://dev.lulli.net/projects/metadao</url>
 
+  <properties>
+    <maven.compiler.source>1.8</maven.compiler.source>
+    <maven.compiler.target>1.8</maven.compiler.target>
+  </properties>
+
 <repositories>
            <repository>
               <id>code.lulli.net</id>
               <url>https://code.lulli.net/maven</url>
             </repository>
  </repositories>
-
-
 
 <!-- for distribution of artifact into the repo -->
 <!-- ****************************************** -->

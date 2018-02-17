@@ -35,7 +35,7 @@ public class DbManager extends DbConnectionManager
                 connections.add(singleConn);
             } catch (Exception e)
             {
-                e.printStackTrace();
+                log.error(e);
             }
         }
     }

@@ -6,7 +6,6 @@ import org.apache.log4j.Logger;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.PreparedStatement;
 import java.util.Properties;
 
 public class SQLiteDbManager extends DbConnectionManager
@@ -28,38 +27,12 @@ public class SQLiteDbManager extends DbConnectionManager
         try
         {
             Class.forName(DRIVER_CLASS_NAME);
-            //con = DriverManager.getConnection(JDBC_URL,DB_USER,DB_PASSWORD);
-            con =  DriverManager.getConnection(JDBC_URL);
-            //TODO:::
-            //initializeWAL(con);
-
+            con = DriverManager.getConnection(JDBC_URL);
         } catch (Exception e)
         {
-            e.printStackTrace();
+            log.error(e);
         }
         return con;
-    }
-
-    public void initializeWAL(Connection con)
-    {
-        // http://stackoverflow.com/questions/3852068/sqlite-insert-very-slow
-        // https://www.sqlite.org/wal.html
-        try
-        {
-            PreparedStatement ps1 = con.prepareStatement("PRAGMA journal_mode = WAL");
-            ps1.execute();
-        } catch (Exception e)
-        {
-            log.error("initializeWAL::PS1:" + e);
-        }
-        try
-        {
-            PreparedStatement ps2 = con.prepareStatement("PRAGMA synchronous = NORMAL");
-            ps2.execute();
-        } catch (Exception e)
-        {
-            log.error("initializeWAL::PS2:" + e);
-        }
     }
 
 
@@ -78,7 +51,7 @@ public class SQLiteDbManager extends DbConnectionManager
             }
         } catch (Exception e)
         {
-            e.printStackTrace();
+            log.error(e);
         }
     }
 
@@ -124,10 +97,9 @@ public class SQLiteDbManager extends DbConnectionManager
         DB_PASSWORD = (String) dbProperties.get("database.sqlite.DB_PASSWORD");
     }
 
-
-    // GIVE THE DATABASE FILE NAME
     public static SQLiteDbManager getInstance(String dbName)
     {
+
         return new SQLiteDbManager(dbName);
     }
 
